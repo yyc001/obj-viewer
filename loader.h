@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
-#include "geom.h"
+#include "mesh.h"
 using namespace std;
 
 
@@ -74,9 +74,7 @@ class TrimeshLoader
 					}
 				}
 			}
-			if(not_screwy)
-				pmesh->writeDone();
-			else
+			if(!not_screwy)
 				cout << "File not found.\n\n";
 			ifs.close();
 			return not_screwy;

@@ -3,9 +3,16 @@ CC = g++
 RM = rm
 EXE = main
 OBJS = \
-	teaport.o
-#   main.o \
+	main.o \
+	windowing.o
+
+# teaport.o 
+#   main.o
 #   test.o
+
+run: main
+	./main nilu.obj
+
 $(EXE): $(OBJS)
 	$(CC) -o $@ $^ -lGL -lGLU -lglut
 %.o: %.c
