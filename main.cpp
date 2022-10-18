@@ -22,27 +22,27 @@ Camera stare_at(Trimesh *mesh);
 
 int main(int argc, char* argv[])
 {
-	//cout << "seg fault" << endl;
     glutInit(&argc, argv); //init glut library
-	
-	
+	window.init();
 	TrimeshLoader *loader = new TrimeshLoader();  
-	Trimesh* mesh;
-	//cout << "seg fault1" << endl;
-
-
+	Trimesh mesh1, mesh2;
 	if(argc >= 2)
 	{
-		mesh = new Trimesh();
-		loader->loadOBJ(argv[1], mesh);
-		window.meshes.push_back(mesh);
+		// mesh = new Trimesh();
+		loader->loadOBJ(argv[1], &mesh1);
+		window.meshes.push_back(&mesh1);
+		mesh2 = mesh1;
+		mesh2.prepareTransformation(MESH_SCALE, 0.5, 0.5, 0.5);
+		mesh2.prepareTransformation(MESH_TRANSLATE, 10, 0, 0);
+		mesh2.applyTransformations();
+		mesh2.enable_transformation = 1;
+		window.meshes.push_back(&mesh2);
 	} else {
 		cout << "no input .obj"<<endl;
 		exit(-1);
 	}
 	//cout << "seg fault2";
-	window.init();
-	Camera camera = stare_at(mesh);
+	Camera camera = stare_at(&mesh1);
 	window.setCamera(camera);
 	window.mainLoop();
 }
@@ -64,7 +64,7 @@ Camera stare_at(Trimesh *mesh)
 
 	float diam = mesh->diam();
 	camera.eye.z = diam * 2;
-
+	// cout << diam <<endl;
 	camera.up.x = 0;
 	camera.up.y = 1;
 	camera.up.z = 0;

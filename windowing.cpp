@@ -54,9 +54,12 @@ void Windowing::display()
         );
 
     for(Trimesh *mesh: this->meshes) {
-        if(mesh != NULL)
+        if(mesh != NULL){
             mesh->display();
+            printf("m ");
+        }
     }
+    printf("\n");
 
     // //要显示的字符
     // char *str = "current fps = ";

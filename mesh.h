@@ -25,10 +25,14 @@ class Trimesh
         vector<vector<float> > prepare_transformations;
         int enable_transformation;
 
+		// 动画
+
 		Trimesh()
 		{
 			min_dot[0] = min_dot[1] = min_dot[2] = FLT_MAX;
 			max_dot[0] = max_dot[1] = max_dot[2] = -FLT_MAX;
+			memset(transformation_mat, 0, sizeof(transformation_mat));
+			enable_transformation = 0;
 		}
 
 		void prepareTransformation(float t, float x, float y, float z, float theta = 0)
