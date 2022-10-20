@@ -3,17 +3,17 @@
 
 #include "base.h"
 #include "mesh.h"
+#include "camera.h"
 
 class Windowing{
     public:
-    Camera camera;
-    // CameraController cc;
+    CameraController *cc;
     std::vector< Trimesh* > meshes;
     int active_mesh;
 
     void init();
 
-    void setCamera(Camera &b);
+    // void setCameraController(CameraController *cc);
 
     void display();
 

@@ -4,7 +4,8 @@ RM = rm
 EXE = main
 OBJS = \
 	main.o \
-	windowing.o
+	windowing.o\
+	base.o\
 
 # teaport.o 
 #   main.o

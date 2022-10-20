@@ -12,6 +12,7 @@
 #include "loader.h"
 #include "base.h"
 #include "mesh.h"
+#include "camera.h"
 #include "windowing.h"
 
 using namespace std;
@@ -19,6 +20,8 @@ using namespace std;
 Windowing window;
 // Windowing *mWindow;
 Camera stare_at(Trimesh *mesh);
+Camera camera;
+CameraController cc;
 
 int main(int argc, char* argv[])
 {
@@ -42,8 +45,12 @@ int main(int argc, char* argv[])
 		exit(-1);
 	}
 	//cout << "seg fault2";
-	Camera camera = stare_at(&mesh1);
-	window.setCamera(camera);
+	camera = stare_at(&mesh1);
+	cc.reset = camera;
+	window.cc = &cc;
+	cc.camera = &camera;
+	camera.mode = CAMERA_FREE;
+	// window.setCamera(camera);
 	window.mainLoop();
 }
 
@@ -51,23 +58,23 @@ Camera stare_at(Trimesh *mesh)
 {
 	Camera camera;
 	vector<float> mp = mesh->middlePoint();
-	camera.at.x = mp[0];
-	camera.at.y = mp[1];
-	camera.at.z = mp[2];
+	camera.at[0] = mp[0];
+	camera.at[1] = mp[1];
+	camera.at[2] = mp[2];
 	
 	// camera.at.x = 0;
 	// camera.at.y = 0;
 	// camera.at.z = 0;
 
-	camera.eye.x = 0;
-	camera.eye.y = mp[0];
+	camera.eye[0] = 0;
+	camera.eye[1] = mp[0];
 
 	float diam = mesh->diam();
-	camera.eye.z = diam * 2;
+	camera.eye[2] = diam * 2;
 	// cout << diam <<endl;
-	camera.up.x = 0;
-	camera.up.y = 1;
-	camera.up.z = 0;
+	camera.up[0] = 0;
+	camera.up[1] = 1;
+	camera.up[0] = 0;
 
 	camera.fovy = 45;
 	camera.width = 1000;

@@ -27,11 +27,10 @@ void Windowing::init()
 
 }
 
-void Windowing::setCamera(Camera &b)
-{
-    this->camera = b;
-    this->reshape(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
-}
+// void setCameraController(CameraController *cc)
+// {
+//     this->cc = cc;
+// }
 
 void Windowing::display()
 {
@@ -42,24 +41,21 @@ void Windowing::display()
     glEnable(GL_LIGHT0);
     glEnable(GL_COLOR_MATERIAL);
 
-    // void gluLookAt(
-    //     GLdouble eyex, GLdouble eyey,GLdouble eyez,
-    //     GLdouble centerx, GLdouble centery, GLdouble centerz,
-    //     GLdouble upx, GLdouble upy,GLdouble upz
-    // );
-    gluLookAt(
-        this->camera.eye.x, this->camera.eye.y, this->camera.eye.z,
-        this->camera.at.x, this->camera.at.y, this->camera.at.z,
-        this->camera.up.x, this->camera.up.y, this->camera.up.z
-        );
+    if(cc){
+        this->cc->setCameraMat();
+    } else {
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(-1,1,-1,1,-1,1);
+        glMatrixMode(GL_MODELVIEW);
+    }
 
     for(Trimesh *mesh: this->meshes) {
         if(mesh != NULL){
             mesh->display();
-            printf("m ");
         }
     }
-    printf("\n");
+    // printf("\n");
 
     // //要显示的字符
     // char *str = "current fps = ";
@@ -70,49 +66,49 @@ void Windowing::display()
     // for (int i = 0; i < n; i++)
     //     glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *(str+i));
     glDisable(GL_LIGHTING);
-    glFlush();
+    // glFlush();
     glutSwapBuffers();
+    glFlush();
 }
 
 void Windowing::reshape(int width, int height){
-    this->camera.width = width;
-    this->camera.height = height;
-
     glViewport(0, 0, width, height);
     // glViewport(GLint x, GLint y, GLsizei width, GLsizei height);
-
-    if(this->camera.mode == CAMERA_FREE || this->camera.mode == CAMERA_PERSPECTIVE) {
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        // gluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
-        gluPerspective(this->camera.fovy, 1.0*this->camera.width/this->camera.height, this->camera.near, this->camera.far);
-        glMatrixMode(GL_MODELVIEW);
-    } else if(this->camera.mode == CAMERA_ORTHO) {
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        // glOrtho(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble nFar);
-        glOrtho(
-            this->camera.at.x, this->camera.up.x,
-            this->camera.at.y, this->camera.up.y, 
-            this->camera.at.z, this->camera.up.z
-            );
-        glMatrixMode(GL_MODELVIEW);
-    }
+    this->cc->reshape(width,height);
 }
 
 void Windowing::keyboard(unsigned char key, int x, int y)
 {
-    printf("keyboard %c %d %d\n", key, x, y);
+    // printf("keyboard %c %d %d\n", key, x, y);
+    if(cc){
+        if(cc->keyboard(key, x,y)){
+            display();
+        }
+    }
+    if(key == '-'){
+        // printf("")
+        exit(0);
+    }
 }
 
 void Windowing::motion(int x, int y)
 {
-    printf("motion %d %d\n", x, y);
+    // printf("motion %d %d\n", x, y);
+    if(cc){
+        if(cc->motion(x,y, 1)){
+            display();
+        }
+    }
 }
 
 void Windowing::passiveMotion(int x, int y)
 {
-    printf("passiveMotion %d %d\n", x, y);
+    // printf("passiveMotion %d %d\n", x, y);
+    if(cc){
+        if(cc->motion(x,y, 0)){
+            display();
+        }
+    }
 }
 
 void Windowing::mouse(int button, int state, int x, int y)
@@ -123,6 +119,9 @@ void Windowing::mouse(int button, int state, int x, int y)
 void Windowing::special(int key, int x, int y)
 {
     printf("special %d %d %d\n", key, x, y);
+    if(cc){
+        cc->special(key, x, y);
+    }
 }
 
 void Windowing::idle()
@@ -136,6 +135,7 @@ void Windowing::mainLoop() {
     glutDisplayFunc([](){mWindow->display();});
     glutMouseFunc([](int button, int state, int x, int y){mWindow->mouse(button, state, x, y);});
     glutKeyboardFunc([](unsigned char key, int x, int y){mWindow->keyboard(key, x, y);});
+    glutSpecialFunc([](int key, int x, int y){mWindow->special(key, x, y);});
     glutMotionFunc([](int x, int y){mWindow->motion(x, y);});
     glutPassiveMotionFunc([](int x, int y){mWindow->passiveMotion(x, y);});
     glutIdleFunc([](){mWindow->idle();});

@@ -4,6 +4,7 @@
 #include<vector>
 #include<float.h>
 #include<math.h>
+#include<cstring>
 using namespace std;
 
 #define MESH_TRANSLATE 1.0f
