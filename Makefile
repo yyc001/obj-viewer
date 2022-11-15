@@ -6,6 +6,10 @@ OBJS = \
 	main.o \
 	windowing.o\
 	base.o\
+	animation.o\
+	mesh.o\
+	camera.o\
+	picker.o\
 
 # teaport.o 
 #   main.o

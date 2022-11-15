@@ -1,4 +1,5 @@
 *.o
 *.d
 *.obj
+!nilu.obj
 main

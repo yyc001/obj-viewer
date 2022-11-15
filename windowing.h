@@ -4,12 +4,14 @@
 #include "base.h"
 #include "mesh.h"
 #include "camera.h"
+#include "picker.h"
 
 class Windowing{
     public:
     CameraController *cc;
     std::vector< Trimesh* > meshes;
-    int active_mesh;
+    int active_mesh, fps, ltick;
+    Picker *picker;
 
     void init();
 
