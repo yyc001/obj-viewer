@@ -70,18 +70,18 @@ int main(int argc, char* argv[])
 	ac.repeat = 1;
 	ac.type = ANIMATION_BEZIER;
 
-	FrameTransformation f2 = (FrameTransformation{QfromRotation(0,1,0,0),      30.0f, 30.0f, 0.0f});
-	FrameTransformation f3 = (FrameTransformation{QfromRotation(0,1,0,PI/2),   30.0f, 0.0f, 0.0f});
-	FrameTransformation f4 = (FrameTransformation{QfromRotation(0,1,0,PI),     0.0f, 0.0f, 0.0f});
-	FrameTransformation f5 = (FrameTransformation{QfromRotation(0,1,0,PI/2*3), 0.0f, 30.0f, 0.0f});
-	f2.toMatrix(mesh2.transformation_mat);
-	f3.toMatrix(mesh3.transformation_mat);
-	f4.toMatrix(mesh4.transformation_mat);
-	f5.toMatrix(mesh5.transformation_mat);
+	FrameTransformation f2 = (FrameTransformation{QfromRotation(0,1,0,0),      30.0f, 30.0f, 0.0f, 1.0f, 1.0f, 1.0f});
+	FrameTransformation f3 = (FrameTransformation{QfromRotation(0,1,0,PI/2),   30.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f});
+	FrameTransformation f4 = (FrameTransformation{QfromRotation(0,1,0,PI),     0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f});
+	FrameTransformation f5 = (FrameTransformation{QfromRotation(0,1,0,PI/2*3), 0.0f, 30.0f, 0.0f, 1.0f, 1.0f, 1.0f});
 	mesh2.enable_transformation = 1;
 	mesh3.enable_transformation = 1;
 	mesh4.enable_transformation = 1;
 	mesh5.enable_transformation = 1;
+	mesh2.frame = f2;
+	mesh3.frame = f3;
+	mesh4.frame = f4;
+	mesh5.frame = f5;
 	
 	ac.frames.push_back(f2);
 	ac.frames.push_back(f3);

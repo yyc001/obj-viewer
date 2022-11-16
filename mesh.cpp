@@ -8,12 +8,12 @@
 #include "picker.h"
 #include "animation.h"
 #include <GL/glut.h>
+#include <cstdio>
 
 Trimesh::Trimesh()
 {
     min_dot[0] = min_dot[1] = min_dot[2] = FLT_MAX;
     max_dot[0] = max_dot[1] = max_dot[2] = -FLT_MAX;
-    memset(transformation_mat, 0, sizeof(transformation_mat));
     enable_transformation = 0;
     ac = 0;
 	rgba[0] = 1;
@@ -22,51 +22,6 @@ Trimesh::Trimesh()
 	rgba[3] = 1;
 
 }
-
-void Trimesh::prepareTransformation(float t, float x, float y, float z, float theta)
-{
-    if(t == 4.0f)
-    {
-        prepare_transformations.clear();
-        return;
-    }
-
-    vector<float> xd;        
-    xd.push_back((float)t);
-    xd.push_back(theta);
-    xd.push_back(x);
-    xd.push_back(y);
-    xd.push_back(z);
-    prepare_transformations.push_back(xd);
-}
-
-void Trimesh::applyTransformations(int append)
-{
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    for(int i = prepare_transformations.size() - 1; i >= 0; i--) {
-        vector<float> v = prepare_transformations[i];
-        if(v[0] == MESH_TRANSLATE)
-            glTranslatef(v[2], v[3], v[4]);
-        if(v[0] == MESH_SCALE)
-            glScalef(v[2], v[3], v[4]);
-        if(v[0] == MESH_ROTATE)
-            glRotatef(v[1], v[2], v[3], v[4]);
-    }
-    if (append) {
-        glMultMatrixf(transformation_mat);
-    }
-    glGetFloatv(GL_MODELVIEW_MATRIX, transformation_mat);
-    glPopMatrix();
-    prepare_transformations.clear();
-}
-
-        // void setTransformation(float *matrix)
-        // {
-        //     memcpy(transformation_mat, matrix, sizeof(transformation_mat));
-        // }
-
 
 void Trimesh::addVertex(float values[3])
 {
@@ -123,29 +78,38 @@ vector<float> Trimesh::middlePoint()
     t[0] = (max_dot[0] + min_dot[0])/2.0f;
     t[1] = (max_dot[1] + min_dot[1])/2.0f;
     t[2] = (max_dot[2] + min_dot[2])/2.0f;
+	// t[3] = 1;
 	if(ac){
 		FrameTransformation ft = ac->getNowFrame();
 		t[0] += ft.position[0];
 		t[1] += ft.position[1];
 		t[2] += ft.position[2];
+    	return vector<float>(t, t+3);
+
 	}
 	if(enable_transformation){
-		
+		t[0] += frame.position[0];
+		t[1] += frame.position[1];
+		t[2] += frame.position[2];
 	}
     return vector<float>(t, t+3);
+
 }
 
 void Trimesh::display()
 {
     glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
     if (enable_transformation) {
-        glPushMatrix();
-        glMultMatrixf(transformation_mat);
+		frame.display();
     }
     if(ac){
-        // glPushMatrix();
-        ac->display_begin();
+        ac->display();
     }
+	GLfloat gray[] = { 0.75f, 0.75f, 0.75f, 1.0f};
+	glMaterialfv ( GL_FRONT, GL_AMBIENT_AND_DIFFUSE, gray);
+	glEnable(GL_COLOR_MATERIAL);
+	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 	glColor4f(rgba[0], rgba[1], rgba[2], rgba[3]);
     for (unsigned i=0; i < faces.size(); i++)
     {
@@ -160,13 +124,7 @@ void Trimesh::display()
         }
         glEnd();
     }
-    if(ac){
-        ac->display_end();
-        // glPopMatrix();
-    }
+    glPopMatrix();
 
-    if (enable_transformation) {
-        glPopMatrix();
-    }
 
 }

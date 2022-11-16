@@ -25,10 +25,8 @@ class Trimesh
 		int rgba[4];
 
         float min_dot[3], max_dot[3];
-
-        float transformation_mat[16];
-        vector<vector<float> > prepare_transformations;
-        int enable_transformation;
+		int enable_transformation;
+		FrameTransformation frame;
 
 		AnimationController *ac;
 

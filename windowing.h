@@ -12,6 +12,7 @@ class Windowing{
     std::vector< Trimesh* > meshes;
     int active_mesh, fps, ltick;
     Picker *picker;
+    int light;
 
     void init();
 

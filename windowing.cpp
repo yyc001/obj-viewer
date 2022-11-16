@@ -14,17 +14,34 @@ void Windowing::init()
 	glutCreateWindow("Object loader");
 	glutInitDisplayMode(GLUT_DOUBLE);
 	
-    glClearColor(0.0, 0.0, 0.0, 1.0f);
-	glClearDepth(1.0f);
-	glEnable(GL_DEPTH_TEST);
+    glClearDepth(1.0f);
 	glDepthFunc(GL_LEQUAL);
-	glShadeModel(GL_SMOOTH);
 	glEnable(GL_COLOR_MATERIAL);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-	//glDisable(GL_CULL_FACE);
-	//glEnable(GL_LIGHT0);
-	//glEnable(GL_LIGHTING);
+        //材质反光性设置
+    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };  //镜面反射参数
+    GLfloat mat_shininess[] = { 50.0 };               //高光指数
+    GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
+    GLfloat white_light[] = { 1.0, 1.0, 1.0, 1.0 };   //灯位置(1,1,1), 最后1-开关
+    GLfloat Light_Model_Ambient[] = { 0.2, 0.2, 0.2, 1.0 }; //环境光参数
+
+    glClearColor(0.0, 0.0, 0.0, 0.0);  //背景色
+    glShadeModel(GL_SMOOTH);           //多变性填充模式
+
+    //材质属性
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
+    //灯光设置
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);   //散射光属性
+    glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);  //镜面反射光
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Light_Model_Ambient);  //环境光参数
+
+    glEnable(GL_LIGHTING);   //开关:使用光
+    glEnable(GL_LIGHT0);     //打开0#灯
+    glEnable(GL_DEPTH_TEST); //打开深度测试
 
 }
 
@@ -39,8 +56,13 @@ void Windowing::display()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
+    if(light){
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
+        // printf("light on\n");
+    } else {
+        glDisable(GL_LIGHT0);
+    }
     glEnable(GL_COLOR_MATERIAL);
 
     if(cc){
@@ -91,6 +113,9 @@ void Windowing::keyboard(unsigned char key, int x, int y)
         // printf("")
         exit(0);
     }
+    if(key == 'l' || key == 'L'){
+        light = !light;
+    }
 }
 
 void Windowing::motion(int x, int y)
@@ -101,6 +126,10 @@ void Windowing::motion(int x, int y)
             // display();
         }
     }
+    if(picker){
+        // printf("picker.\n");
+        picker->motion(x,y,1);
+    }
 }
 
 void Windowing::passiveMotion(int x, int y)
@@ -110,6 +139,10 @@ void Windowing::passiveMotion(int x, int y)
         if(cc->motion(x,y, 0)){
             // display();
         }
+    }
+    if(picker){
+        // printf("picker.\n");
+        picker->motion(x,y,0);
     }
 }
 

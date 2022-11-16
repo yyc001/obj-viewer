@@ -29,7 +29,8 @@ Trimesh *Picker::pick(float pos[3], float eye[3])
     float distance = 1e9;
     for(Trimesh *mesh: meshes){
         vector<float> middle = mesh->middlePoint();
-        float diam = mesh->diam();
+        printf("middle %f %f %f\n", middle[0], middle[1], middle[2]);
+        float diam = mesh->diam()/2;
         if(vecLen32(middle[0]-pos[0], middle[1]-pos[1], middle[2]-pos[2]) < diam*diam){
             float nowdis = vecLen32(middle[0]-eye[0], middle[1]-eye[1], middle[2]-eye[2]);
             if(nowdis < distance) {
@@ -38,6 +39,7 @@ Trimesh *Picker::pick(float pos[3], float eye[3])
             }
         }
     }
+    printf("\n");
     return ret;
 }
 
@@ -59,8 +61,8 @@ void Picker::mouse(int button, int state, int x, int y)
         if(picked){
             printf("Pick!\n");
             memcpy(picked->rgba, RGBA_RED, sizeof(RGBA_RED));
-            picked_save = picked;
         }
+        picked_save = picked;
     }
 }
 
@@ -71,8 +73,57 @@ void Picker::special(int key, int x, int y)
         mode = 1;
         break;
         case GLUT_KEY_F3:
+        mode = 2;
+        break;
         case GLUT_KEY_F4:
-        mode = 0;
+        mode = 4;
         break;
     }
+}
+
+void Picker::motion(int x, int y, int pressed)
+{
+    
+    if(pressed && picked_save){
+        float up[3], front[3], left[3];
+        up[0] = camera->up[0];
+        up[1] = camera->up[1];
+        up[2] = camera->up[2];
+        front[0] = camera->at[0] - camera->eye[0];
+        front[1] = camera->at[1] - camera->eye[1];
+        front[2] = camera->at[2] - camera->eye[2];
+        float dp = sin(camera->fovy/180*PI)*camera->near/2;
+        float dx = (save_x - x)*2.0f/(dp*camera->width);
+        float dy = (save_y - y)*2.0f/(dp*camera->height);
+        vecCross3(left, up, front);
+        vecCross3(up, front, left);
+        vecNormalize3(left);
+        vecNormalize3(front);
+        vecNormalize3(up);
+        if(mode&1){
+            // picked_save->prepareTransformation();
+        }
+        if(mode&2){ // row
+            float rotate[3], rt[3];
+            rotate[0] = left[0]*dx+up[0]*dy;
+            rotate[1] = left[1]*dx+up[1]*dy;
+            rotate[2] = left[2]*dx+up[2]*dy;
+            vecCross3(rt, rotate, front);
+            picked_save->frame.rotate(QfromRotation(
+                rt[0], 
+                rt[1], 
+                rt[2],
+                (abs(dx)+abs(dy))*(0.1f)
+                ));
+        }
+        if(mode&4){ // otrho
+            // printf("left  %f %f %f\n", left[0], left[1], left[2]);
+            // printf("up    %f %f %f\n", up[0], up[1], up[2]);
+            // printf("front %f %f %f\n", front[0], front[1], front[2]);
+            // printf("apply %f %f %f\n", left[0]*dx+up[0]*dy, left[1]*dx+up[1]*dy, left[2]*dx+up[2]*dy);
+            picked_save->frame.translate(left[0]*dx+up[0]*dy, left[1]*dx+up[1]*dy, left[2]*dx+up[2]*dy);
+        }
+    }
+    save_x = x;
+    save_y = y;
 }
