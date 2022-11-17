@@ -106,10 +106,6 @@ void Trimesh::display()
     if(ac){
         ac->display();
     }
-	GLfloat gray[] = { 0.75f, 0.75f, 0.75f, 1.0f};
-	glMaterialfv ( GL_FRONT, GL_AMBIENT_AND_DIFFUSE, gray);
-	glEnable(GL_COLOR_MATERIAL);
-	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 	glColor4f(rgba[0], rgba[1], rgba[2], rgba[3]);
     for (unsigned i=0; i < faces.size(); i++)
     {

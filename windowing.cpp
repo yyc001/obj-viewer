@@ -52,26 +52,17 @@ void Windowing::init()
 
 void Windowing::display()
 {
-    // return;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     if(light){
         glEnable(GL_LIGHTING);
-        glEnable(GL_LIGHT0);
         // printf("light on\n");
     } else {
-        glDisable(GL_LIGHT0);
+        glDisable(GL_LIGHTING);
     }
-    glEnable(GL_COLOR_MATERIAL);
-
     if(cc){
-        this->cc->setCameraMat();
-    } else {
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(-1,1,-1,1,-1,1);
-        glMatrixMode(GL_MODELVIEW);
+        cc->setCameraMat();
     }
 
     for(Trimesh *mesh: this->meshes) {
@@ -79,21 +70,54 @@ void Windowing::display()
             mesh->display();
         }
     }
-    // printf("\n");
-
-    // //要显示的字符
-    // char *str = "current fps = ";
-    // int n = strlen(str);
-    // //设置要在屏幕上显示字符的起始位置
-    // glRasterPos2i(0,0);
-    // //逐个显示字符串中的每个字符
-    // for (int i = 0; i < n; i++)
-    //     glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *(str+i));
-    glDisable(GL_LIGHTING);
-    // glFlush();
     glutSwapBuffers();
     glFlush();
 }
+
+// void Windowing::display2()
+// {
+//     // return;
+//     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//     glMatrixMode(GL_MODELVIEW);
+//     glLoadIdentity();
+//     if(light){
+//         glEnable(GL_LIGHTING);
+//         glEnable(GL_LIGHT0);
+//         // printf("light on\n");
+//     } else {
+//         glDisable(GL_LIGHT0);
+//     }
+//     glEnable(GL_COLOR_MATERIAL);
+
+//     if(cc){
+//         this->cc->setCameraMat();
+//     } else {
+//         glMatrixMode(GL_PROJECTION);
+//         glLoadIdentity();
+//         glOrtho(-1,1,-1,1,-1,1);
+//         glMatrixMode(GL_MODELVIEW);
+//     }
+
+//     for(Trimesh *mesh: this->meshes) {
+//         if(mesh != NULL){
+//             mesh->display();
+//         }
+//     }
+//     // printf("\n");
+
+//     // //要显示的字符
+//     // char *str = "current fps = ";
+//     // int n = strlen(str);
+//     // //设置要在屏幕上显示字符的起始位置
+//     // glRasterPos2i(0,0);
+//     // //逐个显示字符串中的每个字符
+//     // for (int i = 0; i < n; i++)
+//     //     glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *(str+i));
+//     glDisable(GL_LIGHTING);
+//     // glFlush();
+//     glutSwapBuffers();
+//     glFlush();
+// }
 
 void Windowing::reshape(int width, int height){
     glViewport(0, 0, width, height);

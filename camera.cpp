@@ -126,29 +126,6 @@ int CameraController::keyboard(unsigned char key, int x, int y)
     case 'I':
         camera->info();
         return 0;
-    case 'p':
-    case 'P':
-        float ff[16];
-        glGetFloatv(GL_MODELVIEW_MATRIX, ff);
-        menv_begin();
-        menv_mul(ff);
-        glGetFloatv(GL_PROJECTION_MATRIX, ff);
-        menv_mul(ff);
-        menv_get(ff);
-        menv_end();
-        printf("matview.\n");
-        for(int i=0; i<4; i++) {
-            for(int j=0; j<4; j++){
-                printf("%f\t", ff[i*4+j]);
-            }
-            printf("\n");
-        }
-        printf("pos?\n");
-        for(int i=0; i<4; i++) {
-            printf("%f\t %f\n", (ff[i*4+0]+ff[i*4+1]+ff[i*4+2]+ff[i*4+3]), (ff[i*4+0]+ff[i*4+1]+ff[i*4+2]+ff[i*4+3]));
-        }
-        return 0;
-    }
 
     float up[3], front[3], left[3];
     if(camera->mode == CAMERA_PERSPECTIVE || camera->mode == CAMERA_ORTHO) {
@@ -291,16 +268,18 @@ int CameraController::special(int key, int x, int y)
         camera->mode = CAMERA_FREE;
         reshape(camera->width, camera->height);
         // from camera to angle
-        freealpha;
         float shee[3];
         shee[0] = (camera->at[0]-camera->eye[0]);
-        shee[1] = (camera->at[1]-camera->eye[1]);
-        // shee[2] = (camera->at[2]-camers->eye[2]);
+        shee[1] = (-camera->at[2]+camera->eye[2]);
+        // shee[2] = (camera->at[2]-camera->eye[2]);
         vecNormalize2(shee);
         freealpha = acos(shee[0]);
         if(shee[1] < 0) freealpha = 2*PI - freealpha;
+        shee[0] = (camera->at[0]-camera->eye[0]);
+        shee[1] = (camera->at[1]-camera->eye[1]);
+        shee[2] = (camera->at[2]-camera->eye[2]);
         vecNormalize3(shee);
-        freetheta = asin(shee[2]);
+        freetheta = asin(shee[1]);
         return 1;
     case GLUT_KEY_F3:
         camera->mode = CAMERA_PERSPECTIVE;

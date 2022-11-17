@@ -98,6 +98,8 @@ int main(int argc, char* argv[])
 	picker.meshes.push_back(&mesh5);
 	picker.mode = 1;
 	window.fps = 30;
+
+	// printf("color %f %f %f %f\n", mesh1.rgba[0], mesh1.rgba[1], mesh1.rgba[2], mesh1.rgba[3]);
 	window.mainLoop();
 }
 

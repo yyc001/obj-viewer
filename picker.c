@@ -29,7 +29,7 @@ Trimesh *Picker::pick(float pos[3], float eye[3])
     float distance = 1e9;
     for(Trimesh *mesh: meshes){
         vector<float> middle = mesh->middlePoint();
-        printf("middle %f %f %f\n", middle[0], middle[1], middle[2]);
+        // printf("middle %f %f %f\n", middle[0], middle[1], middle[2]);
         float diam = mesh->diam()/2;
         if(vecLen32(middle[0]-pos[0], middle[1]-pos[1], middle[2]-pos[2]) < diam*diam){
             float nowdis = vecLen32(middle[0]-eye[0], middle[1]-eye[1], middle[2]-eye[2]);
@@ -39,7 +39,7 @@ Trimesh *Picker::pick(float pos[3], float eye[3])
             }
         }
     }
-    printf("\n");
+    // printf("\n");
     return ret;
 }
 
@@ -51,7 +51,11 @@ void Picker::mouse(int button, int state, int x, int y)
     if(button==0 && state==1 && (mode&1)){
         // printf("zmhsn\n");
         if(picked_save) {
-            memcpy(picked_save->rgba, RGBA_WHITE, sizeof(RGBA_WHITE));
+            // memcpy(picked_save->rgba, RGBA_WHITE, sizeof(RGBA_WHITE));
+            picked_save->rgba[0] = RGBA_WHITE[0];
+            picked_save->rgba[1] = RGBA_WHITE[1];
+            picked_save->rgba[2] = RGBA_WHITE[2];
+            picked_save->rgba[3] = RGBA_WHITE[3];
         }
         // printf("eek\n");
         float obj[3];
@@ -59,8 +63,10 @@ void Picker::mouse(int button, int state, int x, int y)
         Trimesh *picked = pick(obj, camera->eye);
         printf("Pick %f %f %f\n", obj[0], obj[1], obj[2]);
         if(picked){
-            printf("Pick!\n");
-            memcpy(picked->rgba, RGBA_RED, sizeof(RGBA_RED));
+            picked->rgba[0] = RGBA_RED[0];
+            picked->rgba[1] = RGBA_RED[1];
+            picked->rgba[2] = RGBA_RED[2];
+            picked->rgba[3] = RGBA_RED[3];
         }
         picked_save = picked;
     }
@@ -109,12 +115,7 @@ void Picker::motion(int x, int y, int pressed)
             rotate[1] = left[1]*dx+up[1]*dy;
             rotate[2] = left[2]*dx+up[2]*dy;
             vecCross3(rt, rotate, front);
-            picked_save->frame.rotate(QfromRotation(
-                rt[0], 
-                rt[1], 
-                rt[2],
-                (abs(dx)+abs(dy))*(0.1f)
-                ));
+            picked_save->frame.rotate(QfromRotation(rt[0], rt[1], rt[2], (abs(dx)+abs(dy))*(0.1f)));
         }
         if(mode&4){ // otrho
             // printf("left  %f %f %f\n", left[0], left[1], left[2]);
