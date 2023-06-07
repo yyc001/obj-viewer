@@ -126,6 +126,7 @@ int CameraController::keyboard(unsigned char key, int x, int y)
     case 'I':
         camera->info();
         return 0;
+    }
 
     float up[3], front[3], left[3];
     if(camera->mode == CAMERA_PERSPECTIVE || camera->mode == CAMERA_ORTHO) {
